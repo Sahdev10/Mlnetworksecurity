@@ -127,11 +127,14 @@ class ModelTrainer:
         ## Track the experiements with mlflow
         self.track_mlflow(best_model,classification_train_metric)
 
+        logging.info(f"Classification train metric: {classification_train_metric}")
 
         y_test_pred=best_model.predict(x_test)
         classification_test_metric=get_classification_score(y_true=y_test,y_pred=y_test_pred)
+        
 
         self.track_mlflow(best_model,classification_test_metric)
+        logging.info(f"Classification test metric: {classification_test_metric}")
 
         preprocessor = load_object(file_path=self.data_transformation_artifact.transformed_object_file_path)
             
@@ -139,7 +142,7 @@ class ModelTrainer:
         os.makedirs(model_dir_path,exist_ok=True)
 
         Network_Model=NetworkModel(preprocessor=preprocessor,model=best_model)
-        save_object(self.model_trainer_config.trained_model_file_path,obj=NetworkModel)
+        save_object(self.model_trainer_config.trained_model_file_path,obj=Network_Model)
         #model pusher
         save_object("final_model/model.pkl",best_model)
         
@@ -177,6 +180,7 @@ class ModelTrainer:
             )
 
             model_trainer_artifact=self.train_model(x_train,y_train,x_test,y_test)
+            print(model_trainer_artifact)
             return model_trainer_artifact
 
             
